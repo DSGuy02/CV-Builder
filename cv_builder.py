@@ -2,7 +2,7 @@
 """
 ATS-Friendly CV Builder
 Parses a structured Markdown file and outputs HTML, PDF, and DOCX.
-Usage: python cv_builder.py [input_file] [--no-pdf] [--no-docx]
+Usage: python cv_builder.py [input_file] [--no-html] [--no-pdf] [--no-docx]
 """
 
 import re
@@ -615,6 +615,7 @@ def _docx_entry(doc, entry: dict):
 def main():
     parser = argparse.ArgumentParser(description="ATS CV Builder")
     parser.add_argument("input", nargs="?", default="input/cv_template.md")
+    parser.add_argument("--no-html", action="store_true")
     parser.add_argument("--no-pdf", action="store_true")
     parser.add_argument("--no-docx", action="store_true")
     args = parser.parse_args()
@@ -631,10 +632,14 @@ def main():
     cv = parse_cv(input_path)
     stem = input_path.stem
 
-    html_path = output_dir / f"{stem}.html"
-    html_content = build_html(cv)
-    html_path.write_text(html_content, encoding="utf-8")
-    print(f"  ✓ HTML  → {html_path}")
+    html_content = None
+    if not args.no_html or not args.no_pdf:
+        html_content = build_html(cv)
+
+    if not args.no_html:
+        html_path = output_dir / f"{stem}.html"
+        html_path.write_text(html_content, encoding="utf-8")
+        print(f"  ✓ HTML  → {html_path}")
 
     if not args.no_pdf:
         if WEASYPRINT_OK:

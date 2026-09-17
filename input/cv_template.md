@@ -17,10 +17,11 @@
 ## META
 name: Your Name
 profession: Your Job Title
+extras:
+  - License
+  - Country
 email: you@example.com
 phone: +1234567890
-extras:
-  - City, Country
 links:
   - [LinkedIn](https://linkedin.com/in/yourprofile)
   - [GitHub](https://github.com/yourhandle)

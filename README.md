@@ -234,12 +234,13 @@ The title format is `Name — Profession` if a profession is set, otherwise just
 ## CLI Options
 
 ```
-python cv_builder.py [input_file] [--no-pdf] [--no-docx]
+python cv_builder.py [input_file] [--no-html] [--no-pdf] [--no-docx]
 ```
 
 | Flag | Description |
 |------|-------------|
 | `input_file` | Path to your `.md` file (default: `input/cv_template.md`) |
+| `--no-html` | Skip HTML generation |
 | `--no-pdf` | Skip PDF generation |
 | `--no-docx` | Skip DOCX generation |
 
