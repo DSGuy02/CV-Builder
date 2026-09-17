@@ -1,6 +1,7 @@
 # Test CV — covers edge cases:
 # - omitted section (PROJECTS disabled)
 # - multiple links in META
+# - extras in META (custom contact bar item)
 # - link embedded mid-bullet
 # - special characters in text (&, <, >)
 # - custom section (CERTIFICATIONS)
@@ -13,6 +14,8 @@ name: Jane A. O'Brien
 profession: Senior Software Engineer
 email: jane.obrien@example.com
 phone: +1 (555) 867-5309
+extras:
+  - San Francisco, CA
 links:
   - [LinkedIn](https://linkedin.com/in/janeobrien)
   - [GitHub](https://github.com/janeobrien)

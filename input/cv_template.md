@@ -2,6 +2,7 @@
 # Lines starting with # are comments and are ignored.
 # To omit a section, set its "enabled" to false.
 # Links use the format [display text](url) anywhere in text fields.
+# Contact items (email, phone, extras, links) render in the exact order written.
 #
 # SECTIONS INCLUDED:
 #   Core:    SUMMARY, EXPERIENCE, EDUCATION, SKILLS
@@ -18,6 +19,8 @@ name: Your Name
 profession: Your Job Title
 email: you@example.com
 phone: +1234567890
+extras:
+  - City, Country
 links:
   - [LinkedIn](https://linkedin.com/in/yourprofile)
   - [GitHub](https://github.com/yourhandle)

@@ -109,25 +109,43 @@ bullets:
 
 ## Header
 
-The top of every CV is automatically **centred** across all output formats (HTML, PDF, DOCX) and renders in this order:
+The top of every CV is automatically **centred** across all output formats (HTML, PDF, DOCX):
 
 ```
          Your Name
       Your Job Title
-email  •  phone  •  LinkedIn  •  GitHub
+email  •  phone  •  Location  •  LinkedIn  •  GitHub
 ```
+
+The contact line preserves the **exact order** of items as written in your Markdown input (`email`, `phone`, `extras`, `links`).
 
 ### `profession` field
 
 The `profession` line is **optional**. Add it under `name` in `## META` to display a job title or role beneath your name:
 
-```
+```yaml
 ## META
 name: Jane Smith
 profession: Senior Software Engineer
 ```
 
 Leave it out entirely to omit it — no blank line will appear.
+
+### `extras` field
+
+Use `extras:` to add arbitrary items to your contact line (such as location, certifications, work authorization, or status). Items appear in the exact position you place them in `## META`:
+
+```yaml
+## META
+name: Jane Smith
+profession: Senior Software Engineer
+email: jane@example.com
+phone: +1 (555) 000-0000
+extras:
+  - Dublin, Ireland
+links:
+  - [LinkedIn](https://linkedin.com/in/janesmith)
+```
 
 ---
 
