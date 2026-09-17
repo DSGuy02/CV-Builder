@@ -79,24 +79,57 @@ def parse_cv(md_path: Path) -> dict:
 
 def _parse_meta(text: str) -> dict:
     meta = {}
-    links = []
-    in_links = False
+    contact_items = []  # ordered list of ("type", value) — preserves input order
+    current_list = None  # "links" or "extras"
+    list_buffer = []
+
+    def flush_list():
+        nonlocal current_list, list_buffer
+        if current_list == "links":
+            for item in list_buffer:
+                contact_items.append(("link", item))
+            meta["links"] = list_buffer[:]
+        elif current_list == "extras":
+            for item in list_buffer:
+                contact_items.append(("text", item))
+        current_list = None
+        list_buffer = []
+
     for line in text.splitlines():
         line = line.rstrip()
         if not line:
             continue
-        if line.strip().startswith("- ") and in_links:
-            links.append(_parse_inline_links(line.strip()[2:]))
+        # Collect list items (- prefixed) for current list block
+        if line.strip().startswith("- ") and current_list is not None:
+            raw = line.strip()[2:]
+            if current_list == "links":
+                list_buffer.append(_parse_inline_links(raw))
+            else:
+                list_buffer.append(raw)
             continue
+        # A non-list line ends any active list block
+        if current_list is not None:
+            flush_list()
         if line.startswith("links:"):
-            in_links = True
+            current_list = "links"
             continue
-        in_links = False
+        if line.startswith("extras:"):
+            current_list = "extras"
+            continue
         if ":" in line:
             key, _, val = line.partition(":")
-            meta[key.strip()] = val.strip()
-    if links:
-        meta["links"] = links
+            k, v = key.strip(), val.strip()
+            meta[k] = v
+            if k == "email" and v:
+                contact_items.append(("email", v))
+            elif k == "phone" and v:
+                contact_items.append(("phone", v))
+            # name, profession, etc. are stored in meta but not in the contact bar
+
+    if current_list is not None:
+        flush_list()
+
+    meta["contact_items"] = contact_items
     return meta
 
 
@@ -217,16 +250,17 @@ def build_html(cv: dict) -> str:
     meta = cv["meta"]
     name = escape(meta.get("name", ""))
     profession = escape(meta.get("profession", ""))
-    email = meta.get("email", "")
-    phone = meta.get("phone", "")
-    links = meta.get("links", [])
 
     contact_parts = []
-    if email:
-        contact_parts.append(f'<a href="mailto:{escape(email)}">{escape(email)}</a>')
-    if phone:
-        contact_parts.append(escape(phone))
-    contact_parts.extend(_segments_to_html(lnk) for lnk in links)
+    for kind, val in meta.get("contact_items", []):
+        if kind == "email":
+            contact_parts.append(f'<a href="mailto:{escape(val)}">{escape(val)}</a>')
+        elif kind == "phone":
+            contact_parts.append(escape(val))
+        elif kind == "text":
+            contact_parts.append(escape(val))
+        elif kind == "link":
+            contact_parts.append(_segments_to_html(val))
     contact_html = " &nbsp;•&nbsp; ".join(contact_parts)
 
     profession_html = f'<div class="profession">{profession}</div>' if profession else ""
@@ -486,11 +520,7 @@ def build_docx(cv: dict, out_path: Path):
     _set_para_spacing(contact_para, before=0, after=50)
     _set_para_align(contact_para, WD_ALIGN_PARAGRAPH.CENTER)
 
-    contact_items = (
-        [("email", meta["email"])] if meta.get("email") else []
-    ) + (
-        [("text", meta["phone"])] if meta.get("phone") else []
-    ) + [("link", lnk) for lnk in meta.get("links", [])]
+    contact_items = meta.get("contact_items", [])
 
     for i, (kind, val) in enumerate(contact_items):
         if i > 0:
@@ -500,6 +530,9 @@ def build_docx(cv: dict, out_path: Path):
             r = contact_para.add_run(val)
             r.font.size = Pt(8.5)
             r.font.color.rgb = RGBColor(0, 0, 128)
+        elif kind == "phone":
+            r = contact_para.add_run(val)
+            r.font.size = Pt(8.5)
         elif kind == "text":
             r = contact_para.add_run(val)
             r.font.size = Pt(8.5)

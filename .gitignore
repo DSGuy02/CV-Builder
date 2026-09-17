@@ -1,4 +1,50 @@
+# Virtual Environments
 .venv/
-output/
+venv/
+ENV/
+env/
+
+# Python artifacts
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Build & Generated outputs
+output/
+dist/
+build/
+*.egg-info/
+
+# Operating System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Logs and temporary files
+*.log
+scratch/
+tmp/
+
+# Input files (only track template and test files)
+input/*
+!input/cv_template.md
+!input/test_cv.md
+
+# Reference materials and research reports
+reference/
+prospects/
