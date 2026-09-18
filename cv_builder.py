@@ -2,7 +2,7 @@
 """
 ATS-Friendly CV Builder
 Parses a structured Markdown file and outputs HTML, PDF, and DOCX.
-Usage: python cv_builder.py [input_file] [--no-html] [--no-pdf] [--no-docx]
+Usage: python cv_builder.py [input_file] [-o OUTPUT_DIR] [-n NAME] [--no-html] [--no-pdf] [--no-docx]
 """
 
 import re
@@ -615,9 +615,19 @@ def _docx_entry(doc, entry: dict):
 def main():
     parser = argparse.ArgumentParser(description="ATS CV Builder")
     parser.add_argument("input", nargs="?", default="input/cv_template.md")
-    parser.add_argument("--no-html", action="store_true")
-    parser.add_argument("--no-pdf", action="store_true")
-    parser.add_argument("--no-docx", action="store_true")
+    parser.add_argument(
+        "-o", "--output-dir",
+        default="output",
+        help="Directory to save generated files (default: output)",
+    )
+    parser.add_argument(
+        "-n", "--name",
+        default=None,
+        help="Custom base name for output files without extension (default: input file name)",
+    )
+    parser.add_argument("--no-html", action="store_true", help="Skip HTML output")
+    parser.add_argument("--no-pdf", action="store_true", help="Skip PDF output")
+    parser.add_argument("--no-docx", action="store_true", help="Skip DOCX output")
     args = parser.parse_args()
 
     input_path = Path(args.input)
@@ -625,12 +635,12 @@ def main():
         print(f"Error: Input file not found: {input_path}")
         sys.exit(1)
 
-    output_dir = Path("output")
-    output_dir.mkdir(exist_ok=True)
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Parsing: {input_path}")
     cv = parse_cv(input_path)
-    stem = input_path.stem
+    stem = Path(args.name).stem if args.name else input_path.stem
 
     html_content = None
     if not args.no_html or not args.no_pdf:
